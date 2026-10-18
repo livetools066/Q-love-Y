@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Secret code</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&amp;family=Fredoka:wght@400;600;700&amp;display=swap">
+<style>
+:root{--bg:#ffd3e6;--dot:#ffb6d5;--card:#fff7fb;--ink:#4a1d3f;--line:#4a1d3f;--pink:#ff6fa8;--sun:#ffe27a;--on:#4a1d3f;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#2b1026;--dot:#3b1735;--card:#44203e;--ink:#ffe6f2;--line:#ff9ccb}}
+:root[data-theme="dark"]{--bg:#2b1026;--dot:#3b1735;--card:#44203e;--ink:#ffe6f2;--line:#ff9ccb}
+html,body{height:100%;margin:0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{background:radial-gradient(var(--dot) 2.5px,transparent 3px) 0 0/22px 22px,var(--bg);color:var(--ink);font:17px/1.4 Fredoka,"Trebuchet MS",system-ui,sans-serif;-webkit-tap-highlight-color:transparent;overflow-x:hidden}
+main{height:100%}
+.screen{display:none;min-height:100%;padding:20px;box-sizing:border-box;flex-direction:column;align-items:center;justify-content:center;gap:22px;text-align:center}
+.screen.on{display:flex}
+h1,h2,.hand,figcaption,.b,.keys button{font-family:Fredoka,"Chalkboard SE","Trebuchet MS",system-ui,sans-serif}
+#love{font-family:Caveat,"Bradley Hand","Segoe Print",cursive}
+h1,h2{margin:0;line-height:1.15}
+h1{font-size:31px}h2{font-size:31px;margin-bottom:22px}
+button{font:inherit;color:inherit}
+button:focus-visible,.ph:focus-within{outline:3px solid var(--pink);outline-offset:3px}
+.card{width:100%;max-width:360px;box-sizing:border-box;padding:26px 18px 20px;background:var(--card);border:3px solid var(--line);border-radius:26px;box-shadow:0 6px 0 var(--line)}
+.btns{display:flex;gap:12px}
+.b{flex:1;padding:13px 0;border:3px solid var(--line);border-radius:999px;background:var(--pink);color:var(--on);font-size:21px;font-weight:700;box-shadow:0 4px 0 var(--line);cursor:pointer}
+.b.alt{background:var(--sun)}
+.b:active,.keys button:active{transform:translateY(4px);box-shadow:none}
+.hearts{display:flex;gap:10px;justify-content:center;color:var(--pink);font-size:32px;line-height:1}
+.hearts i{font-style:normal}
+.hearts i::before{content:"\2661"}
+.hearts i.on::before{content:"\2665"}
+.keys{display:grid;grid-template-columns:repeat(3,72px);gap:14px;justify-content:center}
+.keys button{height:62px;border:3px solid var(--line);border-radius:20px;background:var(--card);color:var(--ink);font-size:27px;font-weight:700;box-shadow:0 4px 0 var(--line);cursor:pointer}
+#msg{min-height:1.5em;margin:16px 0 8px;font-weight:700;color:var(--pink);font-size:21px}
+#steps{font-size:24px}
+.shake{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+
+.pair{position:relative;display:flex;gap:14px;width:100%;max-width:440px}
+.pic{flex:1;margin:0;padding:8px 8px 0;background:var(--card);border:3px solid var(--line);border-radius:22px;box-shadow:0 5px 0 var(--line)}
+.l{transform:rotate(-3deg)}.r{transform:rotate(3deg)}
+.ph{display:block;position:relative;aspect-ratio:3/4;border-radius:14px;overflow:hidden;background:var(--dot)}
+.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.av{position:absolute;left:8%;bottom:0;width:84%}
+.ph small{position:absolute;top:8px;left:0;right:0;font-size:12px;color:var(--ink)}
+.ph input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.ph.has .av,.ph.has small{display:none}
+figcaption{padding:10px 0 12px;font-size:19px;font-weight:700}
+.fp{--p:0deg;position:absolute;left:50%;top:43%;width:96px;height:96px;margin:-48px 0 0 -48px;padding:0;border:3px solid var(--line);border-radius:50%;background:var(--pink);color:var(--on);box-shadow:0 5px 0 var(--line);display:grid;place-items:center;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:pointer}
+.fp::before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(#fff var(--p),transparent 0);-webkit-mask:radial-gradient(circle,transparent 38px,#000 39px);mask:radial-gradient(circle,transparent 38px,#000 39px)}
+.fp::after{content:"";position:absolute;left:14px;right:14px;top:14px;height:3px;border-radius:2px;background:#fff;box-shadow:0 0 8px #fff;opacity:0}
+.fp.scan::after{opacity:1;animation:ln .9s ease-in-out infinite alternate}
+@keyframes ln{to{top:74px}}
+.fp svg{position:relative;width:50px;height:50px}
+.fp.done{background:var(--sun)}
+#hint{margin:0;font-weight:700}
+#love{max-width:380px;box-sizing:border-box;padding:18px;background:var(--card);border:3px solid var(--line);border-radius:22px;box-shadow:0 5px 0 var(--line);font-size:27px;font-weight:700;line-height:1.35;animation:up .8s both}
+#love[hidden]{display:none}
+#love p{margin:0 0 12px}#love p:last-child{margin:0}
+@keyframes up{from{opacity:0;transform:translateY(10px)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<main>
+<section id="pass" class="screen on">
+  <h1 id="ptitle">Enter our secret code</h1>
+  <div class="hearts" id="pdots"><i></i><i></i><i></i><i></i></div>
+  <div class="keys"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button><span></span><button>0</button><button id="del" aria-label="Delete">&#9003;</button></div>
+</section>
+
+<section id="ask" class="screen">
+  <div class="card" id="card">
+    <h2 id="q"></h2>
+    <div class="btns"><button class="b" id="yes">Yes</button><button class="b alt" id="no">No</button></div>
+    <p id="msg" aria-live="polite"></p>
+    <div class="hearts" id="steps"><i></i><i></i><i></i><i></i></div>
+  </div>
+</section>
+
+<section id="scan" class="screen">
+  <div class="pair">
+    <figure class="pic l">
+      <label class="ph"><input type="file" accept="image/*" aria-label="Add first photo"><img alt="" hidden><small>tap to add photo</small><svg class="av" viewBox="0 0 100 130"><path d="M18 130c0-26 14-38 32-38s32 12 32 38z" fill="#ff8fbf"/><path d="M22 58c0-26 12-40 28-40s28 14 28 40v38H22z" fill="#5a2a45"/><circle cx="50" cy="58" r="24" fill="#ffe0c9"/><path d="M26 54c4-18 14-26 24-26s20 8 24 26c-10-6-18-10-24-10s-14 4-24 10z" fill="#5a2a45"/><circle cx="41" cy="60" r="3" fill="#4a1d3f"/><circle cx="59" cy="60" r="3" fill="#4a1d3f"/><circle cx="35" cy="68" r="4.5" fill="#ff7fae" opacity=".6"/><circle cx="65" cy="68" r="4.5" fill="#ff7fae" opacity=".6"/><path d="M44 71q6 6 12 0" stroke="#4a1d3f" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg></label>
+      <figcaption>Q Love Y</figcaption>
+    </figure>
+    <figure class="pic r">
+      <label class="ph"><input type="file" accept="image/*" aria-label="Add second photo"><img alt="" hidden><small>tap to add photo</small><svg class="av" viewBox="0 0 100 130"><path d="M18 130c0-26 14-38 32-38s32 12 32 38z" fill="#ffd36e"/><circle cx="50" cy="22" r="11" fill="#8b4a2b"/><circle cx="50" cy="58" r="24" fill="#f6cfae"/><path d="M26 56c0-20 10-32 24-32s24 12 24 32c-8-8-16-12-24-12s-16 4-24 12z" fill="#8b4a2b"/><circle cx="41" cy="60" r="3" fill="#4a1d3f"/><circle cx="59" cy="60" r="3" fill="#4a1d3f"/><circle cx="35" cy="68" r="4.5" fill="#ff7fae" opacity=".6"/><circle cx="65" cy="68" r="4.5" fill="#ff7fae" opacity=".6"/><path d="M44 71q6 6 12 0" stroke="#4a1d3f" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg></label>
+      <figcaption>Y Love Q</figcaption>
+    </figure>
+    <button class="fp" id="fp" aria-label="Hold your thumb here to scan"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 28c0-11 9-20 20-20s20 9 20 20"/><path d="M18 52c-2-6-2-12-2-18 0-9 7-16 16-16s16 7 16 16c0 8-1 12-3 17"/><path d="M25 56c-2-5-3-11-3-20 0-6 4-10 10-10s10 4 10 10c0 7 0 11-1 15"/><path d="M32 36c0 8 1 13 3 19"/><path d="M42 56c1-3 2-6 2-12"/></svg></button>
+  </div>
+  <p id="hint">Hold your thumb on the scanner</p>
+  <div id="love" hidden>
+    <p>Out of everyone in this whole world, my heart chose you, and it would choose you again in every lifetime.</p>
+    <p>Thank you for being my home, my calm, and my favorite person.</p>
+  </div>
+</section>
+</main>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const show=id=>$$('.screen').forEach(e=>e.classList.toggle('on',e.id===id));
+const shake=el=>{el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake')};
+const fill=(sel,n)=>$$(sel+' i').forEach((d,i)=>d.classList.toggle('on',i<n));
+
+let pin='';
+function key(k){if(pin.length>=4)return;pin+=k;fill('#pdots',pin.length);if(pin.length<4)return;
+ setTimeout(()=>{if(pin==='2010'){show('ask');ask()}else{shake($('#pdots'));$('#ptitle').textContent='Oops, try again'}pin='';setTimeout(()=>fill('#pdots',0),350)},150)}
+$$('.keys button:not(#del)').forEach(b=>b.onclick=()=>key(b.textContent));
+$('#del').onclick=()=>{pin=pin.slice(0,-1);fill('#pdots',pin.length)};
+document.addEventListener('keydown',e=>{if($('#pass').classList.contains('on')&&/^\d$/.test(e.key))key(e.key)});
+
+const Q=['Do you love me?','Are you sure about us?','Won’t you leave me?','Will you marry me?'];let qi=0;
+function ask(){$('#q').textContent=Q[qi];fill('#steps',qi+1);$('#msg').textContent=''}
+$('#yes').onclick=()=>{if(++qi<Q.length)ask();else show('scan')};
+$('#no').onclick=()=>{$('#msg').textContent='I hate you 😤';shake($('#card'))};
+
+const fp=$('#fp'),DUR=2400;let raf=0,t0=0;
+function run(){const p=Math.min(1,(performance.now()-t0)/DUR);fp.style.setProperty('--p',p*360+'deg');if(p>=1)finish();else raf=requestAnimationFrame(run)}
+function start(e){if(fp.classList.contains('done')||fp.classList.contains('scan'))return;if(e)e.preventDefault();fp.classList.add('scan');$('#hint').textContent='Scanning…';t0=performance.now();raf=requestAnimationFrame(run)}
+function stop(){if(fp.classList.contains('done'))return;cancelAnimationFrame(raf);fp.classList.remove('scan');fp.style.setProperty('--p','0deg');$('#hint').textContent='Hold your thumb on the scanner'}
+function finish(){fp.classList.remove('scan');fp.classList.add('done');$('#hint').textContent='Match confirmed ♥';$('#love').hidden=false;try{navigator.vibrate&&navigator.vibrate(60)}catch(_){}}
+fp.addEventListener('pointerdown',start);
+['pointerup','pointerleave','pointercancel'].forEach(n=>fp.addEventListener(n,stop));
+fp.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();start()}});
+fp.addEventListener('contextmenu',e=>e.preventDefault());
+
+$$('.ph input').forEach(i=>i.addEventListener('change',()=>{const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const l=i.closest('.ph'),im=l.querySelector('img');im.src=r.result;im.hidden=false;l.classList.add('has')};r.readAsDataURL(f)}));
+</script>
+</body>
+</html>

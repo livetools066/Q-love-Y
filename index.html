@@ -129,7 +129,30 @@ fp.addEventListener('pointerdown',start);
 fp.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();start()}});
 fp.addEventListener('contextmenu',e=>e.preventDefault());
 
-$$('.ph input').forEach(i=>i.addEventListener('change',()=>{const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const l=i.closest('.ph'),im=l.querySelector('img');im.src=r.result;im.hidden=false;l.classList.add('has')};r.readAsDataURL(f)}));
+/* Photos. Paste your Firebase web config into FIREBASE to share the photos across devices; left as null, they stay in this browser only. */
+const FIREBASE=null; /* e.g. {apiKey:"...",authDomain:"...",projectId:"...",appId:"..."} */
+const ROOM=(new URLSearchParams(location.search).get('room')||'main').replace(/[^\w-]/g,'').slice(0,40)||'main';
+const KEY='secretcode-photo-'+ROOM+'-';
+let cloud=null;
+function setPhoto(l,src){const im=l.querySelector('img');im.src=src;im.hidden=false;l.classList.add('has')}
+function shrink(f){return new Promise((ok,no)=>{const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{URL.revokeObjectURL(u);const W=600,H=800,s=Math.max(W/im.width,H/im.height),c=document.createElement('canvas');c.width=W;c.height=H;c.getContext('2d').drawImage(im,(W-im.width*s)/2,(H-im.height*s)/2,im.width*s,im.height*s);ok(c.toDataURL('image/jpeg',.8))};im.onerror=no;im.src=u})}
+async function connect(){
+ if(!FIREBASE)return;
+ try{
+  const V='https://www.gstatic.com/firebasejs/10.14.1/',[a,fs]=await Promise.all([import(V+'firebase-app.js'),import(V+'firebase-firestore.js')]);
+  const db=fs.getFirestore(a.initializeApp(FIREBASE)),ref=n=>fs.doc(db,'rooms',ROOM,'photos','p'+n);
+  cloud={set:(n,d)=>fs.setDoc(ref(n),{d}),watch:(n,cb)=>fs.onSnapshot(ref(n),s=>{if(s.exists())cb(s.data().d)})};
+ }catch(_){}
+}
+const slots=$$('.ph');
+slots.forEach((l,n)=>{
+ try{const v=localStorage.getItem(KEY+n);if(v)setPhoto(l,v)}catch(_){}
+ l.querySelector('input').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;
+  try{const d=await shrink(f);setPhoto(l,d);
+   try{await cloud.set(n,d)}catch(_){try{localStorage.setItem(KEY+n,d)}catch(_){}}
+  }catch(_){}
+  e.target.value=''})});
+connect().then(()=>cloud&&slots.forEach((l,n)=>cloud.watch(n,d=>setPhoto(l,d))));
 </script>
 </body>
-</html>
+        </html>
